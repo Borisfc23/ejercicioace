@@ -1,0 +1,63 @@
+
+---LIBRERIA
+CREATE PROCEDURE tramaCICS(IN refEnv REFERENCE,IN chrCicsData CHARACTER,IN chrSecuencia CHARACTER) 
+BEGIN		
+	DECLARE chrTramaIn CHARACTER FormatAlignCadena(chrCicsData,27,' ','IZQ');
+	
+	SET refEnv.chrCicsData = chrTramaIn;--999999999912322222222222ABC
+
+END;
+
+CREATE PROCEDURE ValidarTrama(IN refEnv REFERENCE,IN refOut REFERENCE)
+BEGIN	
+		--DEBO TRAER LOS DATOS YA LLENADOS CON ESPACIOS refEnv.chrCicsData
+		--OK
+		IF refEnv.chrCicsData='999999999912322222222222ABC' THEN						
+			SET refOut.BLOB.BLOB.data=CAST(FormatAlignCadena('1'||'999999999912322222222222ABC',910,' ','IZQ') AS BLOB CCSID 1208);
+		END IF;
+		
+		IF refEnv.chrCicsData='999999999912322222222222ABD' THEN			
+			SET refOut.BLOB.BLOB.data=CAST(FormatAlignCadena('1'||'999999999912322222222222ABD',910,' ','IZQ') AS BLOB CCSID 1208);
+		END IF;
+		
+		IF refEnv.chrCicsData='999999999912322222222222ABE' THEN			
+			SET refOut.BLOB.BLOB.data=CAST(FormatAlignCadena('1'||'999999999912322222222222ABE',910,' ','IZQ') AS BLOB CCSID 1208);
+		END IF;
+		
+		IF refEnv.chrCicsData='999999999912322222222222ABF' THEN			
+			SET refOut.BLOB.BLOB.data=CAST(FormatAlignCadena('1'||'999999999912322222222222ABF',910,' ','IZQ') AS BLOB CCSID 1208);
+		END IF;
+		
+		IF refEnv.chrCicsData='999999999912322222222222ABG' THEN			
+			SET refOut.BLOB.BLOB.data=CAST(FormatAlignCadena('1'||'999999999912322222222222ABG',910,' ','IZQ') AS BLOB CCSID 1208);
+		END IF;
+		--OK
+		
+		--ERROR
+		IF refEnv.chrCicsData='999999999912322222222222ABX' THEN			
+			SET refOut.BLOB.BLOB.data=CAST(FormatAlignCadena('0'||'999999999912322222222222ABX',910,' ','IZQ') AS BLOB CCSID 1208);
+		END IF;
+		
+		IF refEnv.chrCicsData='999999999912322222222222AXX' THEN										
+			SET refOut.BLOB.BLOB.data=CAST(FormatAlignCadena('0'||'999999999912322222222222AXX',910,' ','IZQ') AS BLOB CCSID 1208);
+		END IF;
+		--ERROR
+		
+		PROPAGATE TO TERMINAL 0;					
+END;
+
+
+CREATE FUNCTION FormatAlignCadena(IN cadena CHARACTER, IN longitud INT, IN char_repeat CHARACTER, IN align CHARACTER) RETURNS CHARACTER
+BEGIN
+	DECLARE int_length_orig INTEGER LENGTH(cadena);
+	IF (int_length_orig > longitud) THEN
+		SET cadena = LEFT(cadena, longitud);
+	ELSEIF (int_length_orig < longitud) THEN
+		IF (align = 'DER') THEN
+			SET cadena = REPLICATE(char_repeat,(longitud-int_length_orig)) || cadena;
+		ELSE
+			SET cadena = cadena || REPLICATE(char_repeat,(longitud-int_length_orig));
+		END IF;
+	END IF;
+	RETURN cadena;
+END;
